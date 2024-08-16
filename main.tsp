@@ -27,3 +27,24 @@ enum petType {
   bird: "bird",
   reptile: "reptile",
 }
+
+@route("/pets")
+namespace Pets {
+  @get
+  op listPets(): {
+    @body pets: Pet[];
+  };
+
+	@get
+  op getPet(@path petId: int32): {
+    @body pet: Pet;
+  } | {
+    @body error: NotFoundError;
+  };
+}
+
+@error
+model NotFoundError {
+  code: "NOT_FOUND";
+  message: string;
+}
