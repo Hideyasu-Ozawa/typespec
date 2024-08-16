@@ -41,6 +41,12 @@ namespace Pets {
   } | {
     @body error: NotFoundError;
   };
+
+	@post
+  op createPet(@body pet: Pet): {
+    @statusCode statusCode: 201;
+    @body newPet: Pet;
+  };
 }
 
 @error
