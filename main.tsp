@@ -46,6 +46,9 @@ namespace Pets {
   op createPet(@body pet: Pet): {
     @statusCode statusCode: 201;
     @body newPet: Pet;
+  } | {
+    @statusCode statusCode: 400;
+    @body error: ValidationError;
   };
 
   @put
@@ -66,5 +69,18 @@ namespace Pets {
 @error
 model NotFoundError {
   code: "NOT_FOUND";
+  message: string;
+}
+
+@error
+model ValidationError {
+  code: "VALIDATION_ERROR";
+  message: string;
+  details: string[];
+}
+
+@error
+model InternalServerError {
+  code: "INTERNAL_SERVER_ERROR";
   message: string;
 }
