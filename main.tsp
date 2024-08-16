@@ -51,12 +51,19 @@ namespace Pets {
     @body error: ValidationError;
   };
 
-  @put
-  op updatePet(@path petId: int32, @body pet: Pet): {
-    @body updatedPet: Pet;
-  } | {
-    @body error: NotFoundError;
-  };
+	@put
+  op updatePet(@path petId: int32, @body pet: Pet):
+    | {
+        @body updatedPet: Pet;
+      }
+    | {
+        @body error: NotFoundError;
+      }
+    | {
+        @statusCode statusCode: 400;
+        @body error: ValidationError;
+      }
+    | InternalServerErrorResponse;
 
   @delete
   op deletePet(@path petId: int32): {
@@ -83,4 +90,9 @@ model ValidationError {
 model InternalServerError {
   code: "INTERNAL_SERVER_ERROR";
   message: string;
+}
+
+model InternalServerErrorResponse {
+  @statusCode statusCode: 500;
+  @body error: InternalServerError;
 }
