@@ -54,6 +54,7 @@ namespace Pets {
   };
 
 	@post
+  @useAuth(BearerAuth)
   op createPet(@body pet: Pet, ...CommonParameters): {
     @statusCode statusCode: 201;
     @body newPet: Pet;
@@ -63,6 +64,7 @@ namespace Pets {
   };
 
 	@put
+  @useAuth(BearerAuth)
   op updatePet(@path petId: int32, @body pet: Pet, ...CommonParameters):
     | {
         @body updatedPet: Pet;
@@ -77,6 +79,7 @@ namespace Pets {
     | InternalServerErrorResponse;
 
   @delete
+  @useAuth(BearerAuth)
   op deletePet(@path petId: int32, ...CommonParameters): {
     @statusCode statusCode: 204;
   } | {
