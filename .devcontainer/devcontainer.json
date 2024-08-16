@@ -10,7 +10,8 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"typespec.typespec-vscode"
+				"typespec.typespec-vscode",
+				"42Crunch.vscode-openapi"
 			]
 		}
 	}
