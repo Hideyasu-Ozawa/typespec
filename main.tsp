@@ -1,14 +1,23 @@
 import "@typespec/http";
 import "@typespec/rest";
 import "@typespec/openapi3";
+import "@typespec/versioning";
+
 
 using TypeSpec.Http;
+using TypeSpec.Versioning;
 
 @service({
   title: "Pet Store",
 })
 @server("https://example.com", "Single server endpoint")
+@versioned(Versions)
 namespace PetStore;
+
+enum Versions {
+  v1: "1.0",
+  v2: "2.0",
+}
 
 model Pet {
   id: int32;
@@ -26,6 +35,12 @@ enum petType {
   fish: "fish",
   bird: "bird",
   reptile: "reptile",
+}
+
+@added(Versions.v2)
+model Toy {
+  id: int32;
+  name: string;
 }
 
 model CommonParameters {
@@ -85,6 +100,37 @@ namespace Pets {
   } | {
     @body error: NotFoundError;
   };
+
+  @route("{petId}/toys")
+  namespace Toys {
+    @added(Versions.v2)
+    @get
+    op listToys(@path petId: int32, ...CommonParameters): {
+      @body toys: Toy[];
+    };
+
+    @added(Versions.v2)
+    @post
+    @useAuth(BearerAuth)
+    op createToy(@path petId: int32, @body toy: Toy, ...CommonParameters): {
+      @statusCode statusCode: 201;
+      @body newToy: Toy;
+    };
+
+    @added(Versions.v2)
+    @put
+    @useAuth(BearerAuth)
+    op updateToy(@path petId: int32, @path toyId: int32, @body toy: Toy, ...CommonParameters): {
+      @body updatedToy: Toy;
+    };
+
+    @added(Versions.v2)
+    @delete
+    @useAuth(BearerAuth)
+    op deleteToy(@path petId: int32, @path toyId: int32, ...CommonParameters): {
+      @statusCode statusCode: 204;
+    };
+  }
 }
 
 @error

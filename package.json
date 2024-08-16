@@ -12,7 +12,8 @@
     "@typespec/compiler": "^0.59.1",
     "@typespec/http": "latest",
     "@typespec/openapi3": "latest",
-    "@typespec/rest": "latest"
+    "@typespec/rest": "latest",
+    "@typespec/versioning": "^0.59.0"
   },
   "private": true
 }
