@@ -5,6 +5,7 @@ compile .
 ```
 
 ```sh
+tsp compile . --watch
 ```
 ```sh
 ```
