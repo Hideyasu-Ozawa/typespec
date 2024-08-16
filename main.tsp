@@ -47,6 +47,13 @@ namespace Pets {
     @statusCode statusCode: 201;
     @body newPet: Pet;
   };
+	
+  @put
+  op updatePet(@path petId: int32, @body pet: Pet): {
+    @body updatedPet: Pet;
+  } | {
+    @body error: NotFoundError;
+  };
 }
 
 @error
