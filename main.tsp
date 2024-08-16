@@ -4,6 +4,12 @@ import "@typespec/openapi3";
 
 using TypeSpec.Http;
 
+@service({
+  title: "Pet Store",
+})
+@server("https://example.com", "Single server endpoint")
+namespace PetStore;
+
 model Pet {
   id: int32;
   @minLength(1)
