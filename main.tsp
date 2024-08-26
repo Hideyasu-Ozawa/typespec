@@ -3,7 +3,6 @@ import "@typespec/rest";
 import "@typespec/openapi3";
 import "@typespec/versioning";
 
-
 using TypeSpec.Http;
 using TypeSpec.Versioning;
 
@@ -12,6 +11,7 @@ using TypeSpec.Versioning;
 })
 @server("https://example.com", "Single server endpoint")
 @versioned(Versions)
+// File-level namespaces
 namespace PetStore;
 
 enum Versions {
@@ -21,11 +21,14 @@ enum Versions {
 
 model Pet {
   id: int32;
+
   @minLength(1)
   name: string;
+
   @minValue(0)
   @maxValue(100)
   age: int32;
+
   kind: petType;
 }
 
@@ -54,52 +57,78 @@ model CommonParameters {
   clientVersion?: string;
 }
 
+model PetListResponse {
+  ...OkResponse;
+  ...Body<Pet[]>;
+}
+
+model PetResponse {
+  ...OkResponse;
+  ...Body<Pet>;
+}
+
+model PetCreatedResponse {
+  ...CreatedResponse;
+  ...Body<Pet>;
+}
+
+model PetErrorResponse {
+  ...BadRequestResponse;
+  ...Body<ValidationError>;
+}
+
+model PetNotFoundResponse {
+  ...NotFoundResponse;
+  ...Body<NotFoundError>;
+}
+
+model PetUnauthorizedResponse {
+  ...UnauthorizedResponse;
+  ...Body<ValidationError>;
+}
+
+model PetSuccessResponse {
+  ...OkResponse;
+  ...Body<string>;
+}
 @route("/pets")
 namespace Pets {
+  @doc("""
+    Get status info for the service.
+    The status includes the current version of the service.
+    The status value may be one of:
+    - `ok`: the service is operating normally
+    - `degraded`: the service is operating in a degraded state
+    - `down`: the service is not operating
+    """)
+  @tag("Status")
+  @route("/status")
   @get
-  op listPets(...CommonParameters): {
-    @body pets: Pet[];
-  };
+  op listPets(...CommonParameters): PetListResponse | BadRequestResponse;
 
-	@get
-  op getPet(@path petId: int32, ...CommonParameters): {
-    @body pet: Pet;
-  } | {
-    @body error: NotFoundError;
-  };
+  @get
+  op getPet(
+    @path petId: int32,
+    @header ifMatch?: string,
+  ): PetResponse | PetNotFoundResponse | BadRequestResponse;
 
-	@post
   @useAuth(BearerAuth)
-  op createPet(@body pet: Pet, ...CommonParameters): {
-    @statusCode statusCode: 201;
-    @body newPet: Pet;
-  } | {
-    @statusCode statusCode: 400;
-    @body error: ValidationError;
-  };
+  @post
+  op createPet(@body pet: Pet): PetCreatedResponse | PetErrorResponse;
 
-	@put
   @useAuth(BearerAuth)
-  op updatePet(@path petId: int32, @body pet: Pet, ...CommonParameters):
-    | {
-        @body updatedPet: Pet;
-      }
-    | {
-        @body error: NotFoundError;
-      }
-    | {
-        @statusCode statusCode: 400;
-        @body error: ValidationError;
-      }
+  @put
+  op updatePet(@path petId: int32, @body pet: Pet):
+    | PetResponse
+    | PetNotFoundResponse
+    | PetUnauthorizedResponse
     | InternalServerErrorResponse;
 
-  @delete
   @useAuth(BearerAuth)
-  op deletePet(@path petId: int32, ...CommonParameters): {
-    @statusCode statusCode: 204;
-  } | {
-    @body error: NotFoundError;
-  };
+  @delete
+  op deletePet(
+    @path petId: int32,
+  ): PetNotFoundResponse | PetSuccessResponse | PetUnauthorizedResponse;
 
   @route("{petId}/toys")
   namespace Toys {
@@ -120,7 +149,12 @@ namespace Pets {
     @added(Versions.v2)
     @put
     @useAuth(BearerAuth)
-    op updateToy(@path petId: int32, @path toyId: int32, @body toy: Toy, ...CommonParameters): {
+    op updateToy(
+      @path petId: int32,
+      @path toyId: int32,
+      @body toy: Toy,
+      ...CommonParameters,
+    ): {
       @body updatedToy: Toy;
     };
 
