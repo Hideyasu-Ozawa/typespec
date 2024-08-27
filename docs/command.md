@@ -1,7 +1,7 @@
 # コマンドメモ
 
 ```shtsp
-compile .
+tsp compile .
 ```
 
 ```sh
