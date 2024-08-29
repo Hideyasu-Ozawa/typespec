@@ -17,6 +17,10 @@ namespace Pets {
   @opExample(#{ returnType: #{ statusCode: 200, body: pets } })
   op listPets(...CommonParameters): PetListResponse | BadRequestResponse;
 
+  @get
+  @route("/page")
+  op pagePets(@query page:PagingRequest<PetFilter, petSortKey>, ...CommonParameters): PagingResponse<Pet>;
+
   @tag("Pet")
   @get
   @opExample(#{ returnType: #{ statusCode: 200, body: pet } })
