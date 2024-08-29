@@ -15,7 +15,6 @@ model Pet {
   kind: PetType;
 }
 
-
 model PetFilter {
   name?: string;
   age?: int32;

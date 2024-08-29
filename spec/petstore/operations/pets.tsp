@@ -1,4 +1,5 @@
 using TypeSpec.Http;
+using TypeSpec.Versioning;
 
 namespace PetStore;
 
@@ -19,7 +20,26 @@ namespace Pets {
 
   @get
   @route("/page")
-  op pagePets(@query page:PagingRequest<PetFilter, petSortKey>, ...CommonParameters): PagingResponse<Pet>;
+  op pagePets(
+    @query page: PagingRequest<PetFilter, petSortKey>,
+    ...CommonParameters,
+  ): PagingResponse<Pet>;
+
+  #deprecated "xxx"
+  @get
+  @route("/version")
+  @opExample(#{ returnType: #{ statusCode: 200, body: pets } })
+  op versionPets(
+    @added(Versions.v2)
+    @query
+    name: string,
+
+    @removed(Versions.v2)
+    @query
+    age: string,
+
+    ...CommonParameters,
+  ): PetListResponse | BadRequestResponse;
 
   @tag("Pet")
   @get
